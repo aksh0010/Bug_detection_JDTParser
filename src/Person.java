@@ -1,44 +1,66 @@
-import java.util.List;
-
 public class Person {
+    private String name;
+    private int age;
 
-	private String name;
-	private String age;
-	private String address;
-	private List<Person> childList;
-	public String getName() {
-		return name;
-	}
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getAge() {
-		return age;
-	}
+    public int getAge() {
+        return age;
+    }
+	/*que1.Class defines equals() but not hashCode():
+	 * */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        Person person = (Person) obj;
+        return age == person.age && name.equals(person.name);
+    }
 
-	public void setAge(String age) {
-		this.age = age;
-	}
+    public static void main(String[] args) {
+    	
+    	/*que 4:Only called constructer and rest methods are not called
+    	 * */
+        Person p1 = new Person("John", 30);
+        Person p2 = new Person("John", 30);
 
-	public String getAddress() {
-		return address;
-	}
+        /*que3 :Unused Variable
+         * */
+        boolean condition = false; // introducing a variable with a constant value
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
-	
-	public void print() {
-		for(int i=0;i<childList.size();i++) {
-			System.out.println(childList.get(i).name);
-			System.out.println(childList.get(i).age);
-			System.out.println(childList.get(i).address);
-		}
-	}
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-	}
+        /* que2 :Conditon has no effect due to the variable type
+         * */
+        if (true) { // this condition always produces the same result
+            if (p1.equals(p2)) {
+                System.out.println("Hello");
+            }
+        }
+        
+        
+        /*que 5:This method contains a switch statement where 
+         * one case branch will fall through to
+         * the next case. Usually, you need to end this 
+         * case with a break or return.
+         * */
+        String var ="Aksh";
+        
+        	switch (var) {
+			case "Aksh":
+			case "asda":
+					break;
+
+			default:
+				break;
+			}
+        
+    }
 }
