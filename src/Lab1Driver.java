@@ -12,12 +12,14 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 public class Lab1Driver {
 
+	private static boolean flag_has_equals=false;
+	private static boolean flag_has_hashCode=false;
 	public void run() throws IOException {
 		
-		//we need to read the content of the file
+		//using apache commons to fetch content of the file directly to string
 		String content = FileUtils.readFileToString(new File("C:\\Users\\akshr\\eclipse-workspace\\Comp4110_Assignment3\\src\\Person.java"));
 		
-		//we need to create a parser object
+		//parser object with Java version 21
 		ASTParser parser = ASTParser.newParser(AST.JLS21);
 		
 		//we need to give the content to the parser
@@ -30,7 +32,13 @@ public class Lab1Driver {
 			public boolean visit(MethodDeclaration node) {
 				// TODO Auto-generated method stub
 				
-				System.out.println("Name :"+node.getName().getIdentifier()+" ReturnType :"+node.getReturnType2());
+				if(node.getName().getIdentifier().equals("equals")) {
+					flag_has_equals=true;
+				}
+				if(node.getName().getIdentifier().equals("hashCode")) {
+					flag_has_hashCode=true;
+				}
+				System.out.println("Name of the node :"+node.getName().getIdentifier()+" ReturnType :"+node.getReturnType2());
 				
 				//Start pos
 				System.out.println(cu.getLineNumber(node.getStartPosition()));
@@ -46,7 +54,7 @@ public class Lab1Driver {
 					
 				}
 				
-				System.out.println("MecodDeclaration: "+node.getName().getFullyQualifiedName());
+//				System.out.println("MecodDeclaration: "+node.getName().getFullyQualifiedName());
 				
 				return true;
 			}
@@ -65,13 +73,22 @@ public class Lab1Driver {
 		
 		//we need to parse the content
 		
-		
 	}
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		
 		Lab1Driver driver = new Lab1Driver();
 		try {
 			driver.run();
+			
+			// Checking for Equals method with no HashCode method and throwing Warning on err
+			if(flag_has_equals) {
+				
+				if(!flag_has_hashCode) {
+					
+					System.err.println("Warning :Found equals method but missing hashCode method");
+				}
+			}
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

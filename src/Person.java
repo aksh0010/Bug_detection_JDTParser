@@ -25,6 +25,11 @@ public class Person {
         Person person = (Person) obj;
         return age == person.age && name.equals(person.name);
     }
+//    @Override
+//    public int hashCode() {
+//    	// TODO Auto-generated method stub
+//    	return super.hashCode();
+//    }
 
     public static void main(String[] args) {
     	
