@@ -6,6 +6,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.BooleanLiteral;
+import org.eclipse.jdt.core.dom.CharacterLiteral;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IBinding;
@@ -14,8 +15,11 @@ import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.NullLiteral;
+import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.StringLiteral;
 
 public class Lab1Driver {
 
@@ -74,6 +78,8 @@ public class Lab1Driver {
 
 			@Override
 			public boolean visit(IfStatement node) {
+				String line = "On line: " + cu.getLineNumber(node.getStartPosition());
+	              
 				String warning="\n\tWarning: Condition has no effect due to the variable type: The condition always produces constant true or false. The condition can be removed.";
                 
 				/*Fetching the node's Expression
@@ -90,43 +96,31 @@ public class Lab1Driver {
 			    		BooleanLiteral value = (BooleanLiteral) condition;
 
 			    		// simply printing the warning on err
-			    		String line ="On line :"+ cu.getLineNumber(node.getStartPosition());
-						
+			    	
 			        	String expression = "|Found condition:("+value+")";
                     	System.err.println(line + expression + warning);
 			        
                     	
                    // Now if the experssion is condition which is always true like 1==1 or something
                     //and not a boolean
-			    } 
-			    /*else if (condition instanceof InfixExpression) {
+			    } else  if (condition instanceof InfixExpression) {
+			    	// Checking if it in infixExpression meaning from eclipse.org{Expression InfixOperator Expression}
 			        InfixExpression infixExpression = (InfixExpression) condition;
 			        if (infixExpression.getOperator() == InfixExpression.Operator.EQUALS) {
-			            Expression leftOperand = infixExpression.getLeftOperand();
+			           
+			        	// fetching left and right operand of each side of infixexpression
+			        	Expression leftOperand = infixExpression.getLeftOperand();
 			            Expression rightOperand = infixExpression.getRightOperand();
-			            Object leftValue = leftOperand.resolveConstantExpressionValue();
-			            Object rightValue = rightOperand.resolveConstantExpressionValue();
 			            
-			            if (leftValue != null && rightValue != null && leftValue.equals(rightValue)) {
-//			                System.err.println("Condition always produces true.");
-
-			            	String line ="On line :"+ cu.getLineNumber(node.getStartPosition());
-							
-			            	String expression = "|Found condition:("+condition+")";
-	                    	System.err.println(line + expression + warning);
-				      
-			            } else {
-
-			            	String line ="On line :"+ cu.getLineNumber(node.getStartPosition());
-							
-			            	String expression = "|Found condition:("+condition+")";
-	                        System.err.println(line + expression + warning);
-				      
-//			                System.err.println("Condition always produces false.");
+			            // Now i have created a function to check if the expression is 
+			            // either string, char,int,null on compile time, it will be marked with
+			            /// having constant results throughout
+			            if (isConstantExpression(leftOperand) && isConstantExpression(rightOperand)) {
+			                String expression = "| Found constant expression: " + infixExpression.toString();
+			                System.err.println(line + expression + warning);
 			            }
-			        } else {
-			            System.out.println("Condition has no effect due to the variable type: The condition can be removed.");
-			        } }*/
+			        }
+			    } 
 			    // Now if the experssion is SimpleName and not a boolean    
 			   else if (condition instanceof SimpleName) {
 			    	//Casting the exp to simplename
@@ -139,9 +133,7 @@ public class Lab1Driver {
 			                Object constantValue = variableBinding.getConstantValue();
 			                if (constantValue != null && constantValue instanceof Boolean) {
 			                		Boolean value = (Boolean) constantValue;
-			                		String line ="On line :"+ cu.getLineNumber(node.getStartPosition());
-									
-			                    	String expression = "|Found condition:("+value+")";
+			                		String expression = "|Found condition:("+value+")";
 			                    	System.err.println(line + expression + warning);
 						      
 			                    
@@ -159,6 +151,13 @@ public class Lab1Driver {
 		
 		//we need to parse the content
 		
+	}
+	private boolean isConstantExpression(Expression expression) {
+	    return expression instanceof NumberLiteral ||
+	           expression instanceof BooleanLiteral ||
+	           expression instanceof CharacterLiteral ||
+	           expression instanceof StringLiteral ||
+	           expression instanceof NullLiteral;
 	}
 	public static void main(String[] args) {
 		

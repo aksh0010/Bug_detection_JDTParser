@@ -1,4 +1,5 @@
 import java.util.Random;
+import java.util.Scanner;
 
 public class Person {
     private String name;
@@ -51,18 +52,36 @@ public class Person {
         if(random.nextInt()== random.nextInt()) {
         	
         }
-        
+        /*Created Variables with constant bool to check
+         * 
+         * */
         if (true) { // this condition always produces the same result
             if (p1.equals(p2)) {
                 System.out.println("Hello");
             }
         }
+      
+        /*Created Variables with constant experssion to check
+         * 
+         * */
         if (1==1) { // this condition always produces the same result
             if (p1.equals(p2)) {
                 System.out.println("Hello");
             }
         }
-        
+        /*Created Variables without constant experssion to check
+         * 
+         * */
+        int a;
+        int b;
+        Scanner scanner = new Scanner(System.in);
+        a = scanner.nextInt();
+        b = scanner.nextInt();
+        if (a==b) { // this condition always produces the same result
+            if (p1.equals(p2)) {
+                System.out.println("Hello");
+            }
+        }
         /*que 5:This method contains a switch statement where 
          * one case branch will fall through to
          * the next case. Usually, you need to end this 
