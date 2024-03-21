@@ -5,9 +5,16 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.BooleanLiteral;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.eclipse.jdt.core.dom.IfStatement;
+import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 public class Lab1Driver {
@@ -38,21 +45,21 @@ public class Lab1Driver {
 				if(node.getName().getIdentifier().equals("hashCode")) {
 					flag_has_hashCode=true;
 				}
-				System.out.println("Name of the node :"+node.getName().getIdentifier()+" ReturnType :"+node.getReturnType2());
+			/*	System.out.println("Name of the node :"+node.getName().getIdentifier()+" ReturnType :"+node.getReturnType2());
 				
 				//Start pos
 				System.out.println(cu.getLineNumber(node.getStartPosition()));
 				
 				// End pos = start + length
 				System.out.println(cu.getLineNumber(node.getStartPosition()+node.getLength()));
-				
+				*/
 				//Getting param
-				for (Object obj :node.parameters()) {
+				/*for (Object obj :node.parameters()) {
 					SingleVariableDeclaration svd =(SingleVariableDeclaration)obj;
 					
 					System.out.println("Parameter type :"+ svd.getType()+" ParamName: "+svd.getName().getIdentifier());
 					
-				}
+				}*/
 				
 //				System.out.println("MecodDeclaration: "+node.getName().getFullyQualifiedName());
 				
@@ -61,11 +68,90 @@ public class Lab1Driver {
 
 			@Override
 			public boolean visit(MethodInvocation node) {
-				// TODO Auto-generated method stub
-				
 				System.out.println("Name of the method call: "+node.getName().getIdentifier() +" Receiver expression: "+node.getExpression());
 				return true;
 			}
+
+			@Override
+			public boolean visit(IfStatement node) {
+				String warning="\n\tWarning: Condition has no effect due to the variable type: The condition always produces constant true or false. The condition can be removed.";
+                
+				/*Fetching the node's Expression
+				 * on compile time.
+				 * 
+				 * If we know the boolean values on compile time meaning the values
+				 * will never change
+				 * */
+				
+				
+			    Expression condition = node.getExpression();
+			    if (condition instanceof BooleanLiteral) {
+			    	// if the condition is instance of Boolean the then fetch it and cast it to boolean
+			    		BooleanLiteral value = (BooleanLiteral) condition;
+
+			    		// simply printing the warning on err
+			    		String line ="On line :"+ cu.getLineNumber(node.getStartPosition());
+						
+			        	String expression = "|Found condition:("+value+")";
+                    	System.err.println(line + expression + warning);
+			        
+                    	
+                   // Now if the experssion is condition which is always true like 1==1 or something
+                    //and not a boolean
+			    } 
+			    /*else if (condition instanceof InfixExpression) {
+			        InfixExpression infixExpression = (InfixExpression) condition;
+			        if (infixExpression.getOperator() == InfixExpression.Operator.EQUALS) {
+			            Expression leftOperand = infixExpression.getLeftOperand();
+			            Expression rightOperand = infixExpression.getRightOperand();
+			            Object leftValue = leftOperand.resolveConstantExpressionValue();
+			            Object rightValue = rightOperand.resolveConstantExpressionValue();
+			            
+			            if (leftValue != null && rightValue != null && leftValue.equals(rightValue)) {
+//			                System.err.println("Condition always produces true.");
+
+			            	String line ="On line :"+ cu.getLineNumber(node.getStartPosition());
+							
+			            	String expression = "|Found condition:("+condition+")";
+	                    	System.err.println(line + expression + warning);
+				      
+			            } else {
+
+			            	String line ="On line :"+ cu.getLineNumber(node.getStartPosition());
+							
+			            	String expression = "|Found condition:("+condition+")";
+	                        System.err.println(line + expression + warning);
+				      
+//			                System.err.println("Condition always produces false.");
+			            }
+			        } else {
+			            System.out.println("Condition has no effect due to the variable type: The condition can be removed.");
+			        } }*/
+			    // Now if the experssion is SimpleName and not a boolean    
+			   else if (condition instanceof SimpleName) {
+			    	//Casting the exp to simplename
+			        SimpleName simpleName = (SimpleName) condition;
+			        
+			        IBinding binding = simpleName.resolveBinding();
+			        if (binding != null && binding.getKind() == IBinding.VARIABLE) {
+			            IVariableBinding variableBinding = (IVariableBinding) binding;
+			            if (variableBinding.getType().getName().equals("boolean")) {
+			                Object constantValue = variableBinding.getConstantValue();
+			                if (constantValue != null && constantValue instanceof Boolean) {
+			                		Boolean value = (Boolean) constantValue;
+			                		String line ="On line :"+ cu.getLineNumber(node.getStartPosition());
+									
+			                    	String expression = "|Found condition:("+value+")";
+			                    	System.err.println(line + expression + warning);
+						      
+			                    
+			                }
+			            }
+			        }
+			    }
+			    return true;
+			}
+
 			
 			
 		}

@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class Person {
     private String name;
     private int age;
@@ -44,12 +46,22 @@ public class Person {
 
         /* que2 :Conditon has no effect due to the variable type
          * */
+        Random random = new Random();
+        
+        if(random.nextInt()== random.nextInt()) {
+        	
+        }
+        
         if (true) { // this condition always produces the same result
             if (p1.equals(p2)) {
                 System.out.println("Hello");
             }
         }
-        
+        if (1==1) { // this condition always produces the same result
+            if (p1.equals(p2)) {
+                System.out.println("Hello");
+            }
+        }
         
         /*que 5:This method contains a switch statement where 
          * one case branch will fall through to
