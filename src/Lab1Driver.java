@@ -25,12 +25,15 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.SwitchStatement;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 public class Lab1Driver {
 
 	private static boolean flag_has_equals=false;
 	private static boolean flag_has_hashCode=false;
 	private static Stack<String> stack_all_methods = new Stack<>();
+	private static Stack<String> stack_all_variables = new Stack<>();
+	
 	public void run() throws IOException {
 		
 		//using apache commons to fetch content of the file directly to string
@@ -81,6 +84,23 @@ public class Lab1Driver {
 				}
 				return true;
 			}
+			
+			@Override
+			public boolean visit(VariableDeclarationFragment node) {
+			    // Add all variable names to the stack
+			    stack_all_variables.add(node.getName().getIdentifier());
+			    System.out.println("\n\t"+node.getName().getIdentifier());
+			    
+
+			    
+			    
+			    
+			    
+			    return true;
+			}
+
+	
+
 			/*
 			 * Visiter for switchStatement
 			 * */
@@ -188,7 +208,12 @@ public class Lab1Driver {
 		if(stack_all_methods.size()!=0) {
 			System.err.println("Warning:Some unused methods Found");
 			System.err.println("\t"+stack_all_methods);
-		}
+		}}
+	public static void variable_usage() {
+			if(stack_all_variables.size()!=0) {
+				System.err.println("Warning:Some unused Variables Found");
+				System.err.println("\t"+stack_all_variables);
+			}
 		
 	}
 	public static void main(String[] args) {
@@ -198,7 +223,7 @@ public class Lab1Driver {
 			driver.run();
 			
 			method_usage();
-			
+			variable_usage();
 			// Checking for Equals method with no HashCode method and throwing Warning on err
 			if(flag_has_equals) {
 				

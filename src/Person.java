@@ -74,6 +74,7 @@ public class Person {
          * */
         int a;
         int b;
+        int c =5;
         Scanner scanner = new Scanner(System.in);
         a = scanner.nextInt();
         b = scanner.nextInt();
