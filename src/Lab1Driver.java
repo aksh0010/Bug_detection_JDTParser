@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
@@ -21,7 +22,9 @@ import org.eclipse.jdt.core.dom.NullLiteral;
 import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.StringLiteral;
+import org.eclipse.jdt.core.dom.SwitchStatement;
 
 public class Lab1Driver {
 
@@ -41,7 +44,9 @@ public class Lab1Driver {
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 		cu.accept(new ASTVisitor() {
-
+			/*
+			 * Visiter for Method declaration 
+			 * */
 			@Override
 			public boolean visit(MethodDeclaration node) {
 				// TODO Auto-generated method stub
@@ -65,19 +70,45 @@ public class Lab1Driver {
 				
 				return true;
 			}
-
+			/*
+			 * Visiter for Method calls / invocations
+			 * */
 			@Override
 			public boolean visit(MethodInvocation node) {
 				
 				if(stack_all_methods.contains(node.getName().getIdentifier())) {
-//					System.err.println("Adding method to stack ");
-					stack_all_methods.remove(node.getName().getIdentifier());
-					
+					stack_all_methods.remove(node.getName().getIdentifier());	
 				}
-//				System.out.println("Name of the method call: "+node.getName().getIdentifier() +" Receiver expression: "+node.getExpression());
 				return true;
 			}
+			/*
+			 * Visiter for switchStatement
+			 * */
+			@Override
+			public boolean visit(SwitchStatement node) {
+			   String line = "On line: " + cu.getLineNumber(node.getStartPosition());
+			   String warning = "\n\tSwitch statement found where one case falls through to the next case.";
 
+			   //storing results in list as object of statement type
+			    List<Statement> statements = node.statements();
+			    for (int i = 0; i < statements.size() - 1; i++) {
+			        
+			    	Statement current = statements.get(i);// Getting current statement and the one next to it
+			        Statement next = statements.get(i + 1);
+			        
+			        // If two consecutive statements are of "Case", then meaning they ignore the break
+			        if (current.getNodeType() == node.SWITCH_CASE && next.getNodeType() == node.SWITCH_CASE) {
+			            // Two consecutive SwitchCase elements found
+			        	System.err.println(line+warning);
+			        	
+			            return true; // Found the warning, no need to continue checking
+			        }
+			    }
+			    return true;
+			}
+			/*
+			 * Visiter for constant values in conditions like if
+			 * */
 			@Override
 			public boolean visit(IfStatement node) {
 				String line = "On line: " + cu.getLineNumber(node.getStartPosition());
@@ -103,7 +134,7 @@ public class Lab1Driver {
                     	System.err.println(line + expression + warning);
 			        
                     	
-                   // Now if the experssion is condition which is always true like 1==1 or something
+                    // Now if the experssion is condition which is always true like 1==1 or something
                     //and not a boolean
 			    } else  if (condition instanceof InfixExpression) {
 			    	// Checking if it in infixExpression meaning from eclipse.org{Expression InfixOperator Expression}
@@ -139,17 +170,9 @@ public class Lab1Driver {
 			                    	System.err.println(line + expression + warning);
 						      
 			                    
-			                }
-			            }
-			        }
-			    }
+			                }}}}
 			    return true;
-			}
-
-			
-			
-		}
-				);
+			}});
 		
 		//we need to parse the content
 		
