@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.AST;
@@ -25,6 +27,7 @@ public class Lab1Driver {
 
 	private static boolean flag_has_equals=false;
 	private static boolean flag_has_hashCode=false;
+	private static Stack<String> stack_all_methods = new Stack<>();
 	public void run() throws IOException {
 		
 		//using apache commons to fetch content of the file directly to string
@@ -43,28 +46,21 @@ public class Lab1Driver {
 			public boolean visit(MethodDeclaration node) {
 				// TODO Auto-generated method stub
 				
+				// meaning the name is not main and is not consturcter then only we add it to our stack
+				if( (!node.getName().getIdentifier().equals("main")) && !node.isConstructor()){
+					
+					stack_all_methods.add(node.getName().getIdentifier());
+					
+				}
+				
+				
 				if(node.getName().getIdentifier().equals("equals")) {
 					flag_has_equals=true;
 				}
 				if(node.getName().getIdentifier().equals("hashCode")) {
 					flag_has_hashCode=true;
 				}
-			/*	System.out.println("Name of the node :"+node.getName().getIdentifier()+" ReturnType :"+node.getReturnType2());
-				
-				//Start pos
-				System.out.println(cu.getLineNumber(node.getStartPosition()));
-				
-				// End pos = start + length
-				System.out.println(cu.getLineNumber(node.getStartPosition()+node.getLength()));
-				*/
-				//Getting param
-				/*for (Object obj :node.parameters()) {
-					SingleVariableDeclaration svd =(SingleVariableDeclaration)obj;
-					
-					System.out.println("Parameter type :"+ svd.getType()+" ParamName: "+svd.getName().getIdentifier());
-					
-				}*/
-				
+			
 //				System.out.println("MecodDeclaration: "+node.getName().getFullyQualifiedName());
 				
 				return true;
@@ -72,7 +68,13 @@ public class Lab1Driver {
 
 			@Override
 			public boolean visit(MethodInvocation node) {
-				System.out.println("Name of the method call: "+node.getName().getIdentifier() +" Receiver expression: "+node.getExpression());
+				
+				if(stack_all_methods.contains(node.getName().getIdentifier())) {
+//					System.err.println("Adding method to stack ");
+					stack_all_methods.remove(node.getName().getIdentifier());
+					
+				}
+//				System.out.println("Name of the method call: "+node.getName().getIdentifier() +" Receiver expression: "+node.getExpression());
 				return true;
 			}
 
@@ -159,11 +161,20 @@ public class Lab1Driver {
 	           expression instanceof StringLiteral ||
 	           expression instanceof NullLiteral;
 	}
+	public static void method_usage() {
+		if(stack_all_methods.size()!=0) {
+			System.err.println("Warning:Some unused methods Found");
+			System.err.println("\t"+stack_all_methods);
+		}
+		
+	}
 	public static void main(String[] args) {
 		
 		Lab1Driver driver = new Lab1Driver();
 		try {
 			driver.run();
+			
+			method_usage();
 			
 			// Checking for Equals method with no HashCode method and throwing Warning on err
 			if(flag_has_equals) {

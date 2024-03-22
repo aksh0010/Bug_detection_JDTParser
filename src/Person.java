@@ -40,7 +40,7 @@ public class Person {
     	 * */
         Person p1 = new Person("John", 30);
         Person p2 = new Person("John", 30);
-
+        p1.getName();
         /*que3 :Unused Variable
          * */
         boolean condition = false; // introducing a variable with a constant value
