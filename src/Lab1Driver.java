@@ -171,6 +171,10 @@ public class Lab1Driver {
 		//we need to parse the content
 		
 	}
+	/**
+	 * Here in this method we check the expression passed to param
+	 * is number, boolean , char ,string,null for that que 2
+	 * */
 	private boolean isConstantExpression(Expression expression) {
 	    return expression instanceof NumberLiteral ||
 	           expression instanceof BooleanLiteral ||
@@ -190,22 +194,25 @@ public class Lab1Driver {
 			}
 		
 	}
+	public static void equals_hashCode_usage() {
+		if(flag_has_equals) {
+			
+			if(!flag_has_hashCode) {
+				
+				System.err.println("Warning :Found equals method but missing hashCode method");
+			}
+		}
+}
 	public static void main(String[] args) {
 		
 		Lab1Driver driver = new Lab1Driver();
 		try {
 			driver.run();
 			
-			method_usage();
-			variable_usage();
-			// Checking for Equals method with no HashCode method and throwing Warning on err
-			if(flag_has_equals) {
-				
-				if(!flag_has_hashCode) {
-					
-					System.err.println("Warning :Found equals method but missing hashCode method");
-				}
-			}
+			method_usage(); // need to check and print the method usage of unsed methods
+			variable_usage(); // need to check and print the variable usage for unused variables
+			equals_hashCode_usage();// Checking for Equals method with no HashCode method and throwing Warning on err
+			
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
