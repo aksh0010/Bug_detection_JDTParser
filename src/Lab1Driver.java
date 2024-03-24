@@ -3,29 +3,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Stack;
-
+import org.eclipse.jdt.core.dom.*;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.BooleanLiteral;
-import org.eclipse.jdt.core.dom.CharacterLiteral;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
-import org.eclipse.jdt.core.dom.IfStatement;
-import org.eclipse.jdt.core.dom.InfixExpression;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.NullLiteral;
-import org.eclipse.jdt.core.dom.NumberLiteral;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.StringLiteral;
-import org.eclipse.jdt.core.dom.SwitchStatement;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 public class Lab1Driver {
 
@@ -89,13 +68,8 @@ public class Lab1Driver {
 			public boolean visit(VariableDeclarationFragment node) {
 			    // Add all variable names to the stack
 			    stack_all_variables.add(node.getName().getIdentifier());
-			    System.out.println("\n\t"+node.getName().getIdentifier());
-			    
-
-			    
-			    
-			    
-			    
+//			    System.out.println("\n\t"+node.getName().getIdentifier());
+ 
 			    return true;
 			}
 
